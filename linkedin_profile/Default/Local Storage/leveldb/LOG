@@ -1,5 +1,8 @@
-2026/08/17-12:15:09.155 c18 Reusing MANIFEST D:\code\jobscraper\linkedin_profile\Default\Local Storage\leveldb/MANIFEST-000001
-2026/08/17-12:15:09.159 c18 Recovering log #3
-2026/08/17-12:15:09.161 c18 Reusing old log D:\code\jobscraper\linkedin_profile\Default\Local Storage\leveldb/000003.log 
-2026/08/17-12:18:27.806 c18 Level-0 table #5: started
-2026/08/17-12:18:27.822 c18 Level-0 table #5: 16462 bytes OK
+2026/08/17-13:16:43.673 5074 Reusing MANIFEST D:\code\jobscraper\linkedin_profile\Default\Local Storage\leveldb/MANIFEST-000001
+2026/08/17-13:16:43.677 5074 Recovering log #3
+2026/08/17-13:16:43.677 5074 Level-0 table #3: started
+2026/08/17-13:16:43.682 5074 Level-0 table #3: 16462 bytes OK
+2026/08/17-13:16:43.683 5074 Recovering log #4
+2026/08/17-13:16:43.684 5074 Reusing old log D:\code\jobscraper\linkedin_profile\Default\Local Storage\leveldb/000004.log 
+2026/08/17-13:16:43.686 5074 Delete type=0 #3
+2026/08/17-13:16:43.686 5074 Delete type=2 #5

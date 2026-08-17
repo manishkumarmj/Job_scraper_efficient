@@ -9,8 +9,14 @@
 3. Update the inputs.yaml file with your preferred criteria
 4. Run the script in a new terminal
 
-- python .\main.py
+- python .\run_linkedin.py
 
 5.
 
 Note ther is some cokkie issue in indded and naukri
+
+How its work
+1st input.yaml file
+-> update Your preffrence
+2nd run run_linkedin.py
+wait for result in result folder done
