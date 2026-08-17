@@ -1,0 +1,6 @@
+playwright 
+pyyaml 
+pandas 
+openpyxl
+requests 
+serpapi

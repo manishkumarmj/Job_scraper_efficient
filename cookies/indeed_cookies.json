@@ -1,0 +1,34 @@
+[
+  {
+    "name": "__Secure-PassportAuthProxy-BearerToken",
+    "value": "eyJraWQiOiJkMmY2MzQ0MS03MzkwLTQzZDMtYWZjNy0zMWUzMjEwM2ZiNzMiLCJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJ1c2VyOjFkMDE1MDdjNzIxNjVjZmMiLCJhY3QiOnsic3ViIjoiYXBwOmE5NjYyYWU4ZTI1OTM0OTc3NmFjNTcwYzk0ODUwMGZiY2JlMzYwZmI2YmNmNGNiOGMxODg5MjcwMDA5YjVkZDIiLCJhdXRoZW50aWNhdGVkIjp0cnVlLCJmaXJzdF9wYXJ0eSI6ImVtcGxveWVyQmFja2VuZEZvckZyb250ZW5kLmluZGVlZC5jb20iLCJhcHBfYWNjb3VudCI6ImQwMjk5ZmFmZmY5Mzk2MDgifSwiYXpwIjoiYTk2NjJhZThlMjU5MzQ5Nzc2YWM1NzBjOTQ4NTAwZmJjYmUzNjBmYjZiY2Y0Y2I4YzE4ODkyNzAwMDliNWRkMiIsInNjb3BlIjoiam9iX3NlZWtlci5wcm9maWxlLndyaXRlIGVtcGxveWVyLmpvYi5vcmdhbmljdHJhZmZpYy5yZWFkIGpvYl9zZWVrZXIuY29tcGFueS5kZXRhaWxzLnJlYWQgam9iX3NlZWtlci5qb2JzLnNlYXJjaCBlbXBsb3llcl9hY2Nlc3Mgam9iX3NlZWtlci5tZXNzYWdpbmcgZW1wbG95ZXIuYWlfc2NyZWVuaW5nIGpvYl9zZWVrZXIuc3VwcG9ydC5jYXNlLmNyZWF0ZSBqb2Jfc2Vla2VyLmFwcGx5IG9mZmxpbmVfYWNjZXNzIGpvYl9zZWVrZXIucHJvZmlsZS5yZWFkIGpvYl9zZWVrZXIud2ViLnNlYXJjaCBqb2Jfc2Vla2VyLnJlc3VtZS5yZWFkIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmUuaW5kZWVkLmNvbSIsImV4cCI6MTc4NjkwMjE5NywiaWF0IjoxNzg2ODk4NTk3fQ.sJ37aRsStdEt2a5w1bP_TalYUNoaqYuq-2P-joQFA0KZv2WyFamgf4PMKNEm2kl3L5xhWMVOFktr7jU285nWdg",
+    "domain": ".indeed.com",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true
+  },
+  {
+    "name": "__Secure-PassportAuthProxy-OauthExpires",
+    "value": "1786902197",
+    "domain": ".indeed.com",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true
+  },
+  {
+    "name": "__Secure-PassportAuthProxy-OauthHMAC",
+    "value": "j/9aGZMHaOnRVeElrmwI3JaL67bc+XVhex4XL6y624w=",
+    "domain": ".indeed.com",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true
+  },
+  {
+    "name": "__Secure-PassportAuthProxy-RefreshToken",
+    "value": "DMUHJJxSlyw",
+    "domain": ".indeed.com",
+    "path": "/",
+    "secure": true,
+    "httpOnly": true
+  }
+]
