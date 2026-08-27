@@ -1,3 +1,4 @@
-- role: Data science Apprentice
+- role: 
+    - intern data 
   locations:
-    - "india"
+    -  remote 
