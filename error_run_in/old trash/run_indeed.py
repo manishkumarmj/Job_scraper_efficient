@@ -4,7 +4,7 @@ import pandas as pd
 import yaml
 import os
 from datetime import datetime
-from scrapers.indeed_scraper import scrape_indeed
+from error_run_in.indeed_scraper import scrape_indeed
 
 def select_hours():
     print("\n📅 Select time range for jobs:")

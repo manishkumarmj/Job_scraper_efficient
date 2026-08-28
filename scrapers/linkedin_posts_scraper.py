@@ -43,10 +43,11 @@ async def scrape_linkedin_posts(
         
         page = browser.pages[0] if browser.pages else await browser.new_page()
         
-        # Build URL with optional geo_id
+        # Build URL with origin parameter
         url = (
             f"https://www.linkedin.com/search/results/content/"
             f"?keywords={keyword.replace(' ', '%20')}"
+            f"&origin=FACETED_SEARCH"
             f"&datePosted=%5B%22{time_filter}%22%5D"
             f"&contentType={content_param}"
             f"&sortBy={sort_param}"
@@ -54,46 +55,89 @@ async def scrape_linkedin_posts(
         if geo_id:
             url += f"&geoId={geo_id}"
         
-        print(f"🌐 Navigating to: {url}")
-        await page.goto(url, wait_until="domcontentloaded")
-        await asyncio.sleep(random.uniform(6, 9))
+        print(f"\n🔗 URL: {url}")
+        print(f"📋 Copy this URL and paste in browser to verify\n")
+        
+        # FIX: Use 'domcontentloaded' instead of 'networkidle'
+        await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+        await asyncio.sleep(random.uniform(4, 6))
         
         await human_like_scroll(page, times=5)
         
+        # Wait for ANY link (posts always have links)
         try:
-            await page.wait_for_selector("div.feed-shared-update-v2, div.occludable-update", timeout=15000)
+            await page.wait_for_selector("a", timeout=15000)
+            print("✅ Page loaded – found links")
         except:
-            print("⚠️ No posts found or page took too long")
+            print("⚠️ Page loaded but no links found")
             await browser.close()
             return results
         
-        all_posts = await page.query_selector_all(
-            "div.feed-shared-update-v2, div.occludable-update"
+        # Find ALL containers that might be posts
+        containers = await page.query_selector_all(
+            "div[data-urn], "
+            "li, "
+            "div.feed-shared-update-v2, "
+            "div.occludable-update, "
+            "div.search-result, "
+            "div.search-result__occludable-update"
         )
         
-        print(f"✅ Found {len(all_posts)} posts for '{keyword}'")
-        posts = all_posts[:max_posts]
+        # Filter: only keep containers that have an <a> tag inside
+        post_containers = []
+        for container in containers:
+            link = await container.query_selector("a")
+            if link:
+                post_containers.append(container)
+        
+        print(f"✅ Found {len(post_containers)} post containers for '{keyword}'")
+        posts = post_containers[:max_posts]
         
         for post in posts:
-            link_el = await post.query_selector("a.app-aware-link")
+            # Get post URL
+            link_el = await post.query_selector("a")
             post_url = ""
             if link_el:
                 post_url = await link_el.get_attribute("href")
                 if post_url:
                     post_url = urljoin("https://www.linkedin.com", post_url.split("?")[0])
             
-            text_el = await post.query_selector("div.feed-shared-update-v2__description, div.break-words")
-            text = await text_el.inner_text() if text_el else ""
+            # Get all text from container (fallback)
+            full_text = await post.inner_text() if post else ""
             
-            author_el = await post.query_selector("span.feed-shared-actor__name")
+            # Try specific selectors for text
+            text_el = (
+                await post.query_selector("div.feed-shared-update-v2__description") or
+                await post.query_selector("div.break-words") or
+                await post.query_selector("div.search-result__snippets")
+            )
+            text = await text_el.inner_text() if text_el else full_text
+            
+            # Get author
+            author_el = (
+                await post.query_selector("span.feed-shared-actor__name") or
+                await post.query_selector("span.search-result__actor-name")
+            )
             author = await author_el.inner_text() if author_el else ""
             
-            title_el = await post.query_selector("span.feed-shared-actor__title")
+            # Fallback: extract author from first line
+            if not author and full_text:
+                lines = full_text.split('\n')
+                if lines:
+                    author = lines[0].strip()
+            
+            # Get author title
+            title_el = (
+                await post.query_selector("span.feed-shared-actor__title") or
+                await post.query_selector("span.search-result__actor-title")
+            )
             author_title = await title_el.inner_text() if title_el else ""
             
+            # Get likes
             likes_el = await post.query_selector("span.social-details-social-counts__reaction-count")
             likes = await likes_el.inner_text() if likes_el else "0"
             
+            # Get comments
             comments_el = await post.query_selector("span.social-details-social-counts__comments")
             comments = await comments_el.inner_text() if comments_el else "0"
             

@@ -4,7 +4,7 @@ import pandas as pd
 import yaml
 import os
 from datetime import datetime
-from scrapers.naukri_scraper import scrape_naukri
+from error_run_in.naukri_scraper import scrape_naukri
 
 def select_hours():
     print("\n📅 Select time range for jobs:")

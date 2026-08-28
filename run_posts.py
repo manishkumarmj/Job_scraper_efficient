@@ -9,7 +9,7 @@ from scrapers.linkedin_posts_scraper import scrape_linkedin_posts
 
 def select_location():
     print("\n📍 Select location:")
-    print("  1. Delhi NCR (Delhi, Noida, Greater Noida, Gurugram, Faridabad)")
+    print("  1. Delhi NCR (Delhi, Noida, Gurugram, Faridabad)")
     print("  2. Mumbai")
     print("  3. Pune")
     print("  4. Chennai")
@@ -20,22 +20,22 @@ def select_location():
     print("  9. Custom (enter Geo ID manually)")
     
     location_map = {
-        "1": "102713980,103644278,102105104,106096897",  # Delhi NCR
-        "2": "102374091",   # Mumbai
-        "3": "102890884",   # Pune
-        "4": "103120538",   # Chennai
-        "5": "103490475",   # Hyderabad
-        "6": "102844750",   # Bangalore
-        "7": "103597537",   # Chandigarh / Mohali
-        "8": "",            # All India (no filter)
-        "9": "custom"       # Custom
+        "1": ["102713980", "103644278", "102105104", "106096897"],  # Delhi NCR
+        "2": ["102374091"],   # Mumbai
+        "3": ["102890884"],   # Pune
+        "4": ["103120538"],   # Chennai
+        "5": ["103490475"],   # Hyderabad
+        "6": ["102844750"],   # Bangalore
+        "7": ["103597537"],   # Chandigarh / Mohali
+        "8": [],              # All India (no filter)
+        "9": "custom"         # Custom
     }
     
     while True:
         choice = input("\nEnter your choice (1-9): ").strip()
         if choice == "9":
             custom = input("Enter Geo ID (comma separated if multiple): ").strip()
-            return custom
+            return [g.strip() for g in custom.split(",")] if custom else []
         if choice in location_map:
             return location_map[choice]
         print("❌ Invalid choice.")
@@ -85,27 +85,101 @@ def format_time(seconds):
     else:
         return f"{s}s"
 
-async def main():
-    print("\n" + "="*60)
-    print("🔍 LINKEDIN POST SCRAPER")
-    print("="*60)
+def generate_urls(keywords, geo_ids, time_filter, content_type, sort_by):
+    """Generate all URLs based on selections."""
+    sort_map = {
+        "recency": "%5B%22recency%22%5D",
+        "date_posted": "%5B%22date_posted%22%5D",
+        "relevance": "%5B%22relevance%22%5D"
+    }
+    content_map = {
+        "posts": "%5B%22posts%22%5D",
+        "jobs": "%5B%22jobs%22%5D",
+        "articles": "%5B%22articles%22%5D"
+    }
     
-    geo_id = select_location()
-    time_filter = select_time_filter()
-    content_type = select_content_type()
-    sort_by = select_sort_order()
+    sort_param = sort_map.get(sort_by, "%5B%22recency%22%5D")
+    content_param = content_map.get(content_type, "%5B%22posts%22%5D")
     
     location_names = {
-        "102713980,103644278,102105104,106096897": "Delhi NCR",
+        "102713980": "Delhi",
+        "103644278": "Noida",
+        "102105104": "Gurugram",
+        "106096897": "Faridabad",
         "102374091": "Mumbai",
         "102890884": "Pune",
         "103120538": "Chennai",
         "103490475": "Hyderabad",
         "102844750": "Bangalore",
-        "103597537": "Chandigarh/Mohali",
-        "": "All India"
+        "103597537": "Chandigarh/Mohali"
     }
-    location_display = location_names.get(geo_id, geo_id if geo_id else "All India")
+    
+    url_list = []
+    for keyword in keywords:
+        if geo_ids:
+            for geo_id in geo_ids:
+                url = (
+                    f"https://www.linkedin.com/search/results/content/"
+                    f"?keywords={keyword.replace(' ', '%20')}"
+                    f"&origin=FACETED_SEARCH"
+                    f"&datePosted=%5B%22{time_filter}%22%5D"
+                    f"&contentType={content_param}"
+                    f"&sortBy={sort_param}"
+                    f"&geoId={geo_id}"
+                )
+                location_name = location_names.get(geo_id, geo_id)
+                url_list.append({
+                    "Keyword": keyword,
+                    "Location": location_name,
+                    "Geo ID": geo_id,
+                    "URL": url
+                })
+        else:
+            url = (
+                f"https://www.linkedin.com/search/results/content/"
+                f"?keywords={keyword.replace(' ', '%20')}"
+                f"&origin=FACETED_SEARCH"
+                f"&datePosted=%5B%22{time_filter}%22%5D"
+                f"&contentType={content_param}"
+                f"&sortBy={sort_param}"
+            )
+            url_list.append({
+                "Keyword": keyword,
+                "Location": "All India",
+                "Geo ID": "",
+                "URL": url
+            })
+    
+    return url_list
+
+async def main():
+    print("\n" + "="*60)
+    print("🔍 LINKEDIN POST SCRAPER")
+    print("="*60)
+    
+    geo_ids = select_location()
+    time_filter = select_time_filter()
+    content_type = select_content_type()
+    sort_by = select_sort_order()
+    
+    # Display location names
+    location_names = {
+        "102713980": "Delhi",
+        "103644278": "Noida",
+        "102105104": "Gurugram",
+        "106096897": "Faridabad",
+        "102374091": "Mumbai",
+        "102890884": "Pune",
+        "103120538": "Chennai",
+        "103490475": "Hyderabad",
+        "102844750": "Bangalore",
+        "103597537": "Chandigarh/Mohali"
+    }
+    
+    location_display = "All India"
+    if geo_ids:
+        loc_names = [location_names.get(g, g) for g in geo_ids]
+        location_display = ", ".join(loc_names)
     
     print(f"\n✅ Scraping with:")
     print(f"   📍 Location: {location_display}")
@@ -128,18 +202,50 @@ async def main():
         print("❌ No keywords found in inputs_posts.yaml")
         return
     
-    print(f"📝 Keywords: {', '.join(keywords)}\n")
+    # ----- GENERATE AND SAVE ALL URLS -----
+    print("📋 Generating all search URLs...")
+    url_list = generate_urls(keywords, geo_ids, time_filter, content_type, sort_by)
     
-    total_tasks = len(keywords)
+    # Save URLs to Excel
+    os.makedirs("results", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M")
+    url_file = f"results/search_urls_{timestamp}.xlsx"
+    df_urls = pd.DataFrame(url_list)
+    df_urls.to_excel(url_file, index=False)
+    print(f"✅ Saved {len(url_list)} URLs to: {url_file}")
+    print("\n📋 Here are your search URLs:\n")
+    
+    # Print URLs in terminal
+    for i, item in enumerate(url_list, 1):
+        print(f"{i}. {item['Keyword']} in {item['Location']}")
+        print(f"   🔗 {item['URL']}\n")
+    
+    # Ask user if they want to continue
+    continue_choice = input("\n🚀 Do you want to start scraping these URLs? (y/n): ").strip().lower()
+    if continue_choice != 'y':
+        print("❌ Scraping cancelled. URLs saved to Excel file.")
+        return
+    
+    # Build task list: (keyword, geo_id) for each combination
+    tasks = []
+    for keyword in keywords:
+        if geo_ids:
+            for geo_id in geo_ids:
+                tasks.append((keyword, geo_id))
+        else:
+            tasks.append((keyword, ""))
+    
+    total_tasks = len(tasks)
     all_posts = []
     completed = 0
     start_time = time.time()
     scraped_times = []
     
     try:
-        for task_index, keyword in enumerate(keywords, 1):
+        for task_index, (keyword, geo_id) in enumerate(tasks, 1):
+            location_name = location_names.get(geo_id, geo_id if geo_id else "All India")
             print(f"\n{'='*60}")
-            print(f"📍 Search {task_index}/{total_tasks}: '{keyword}'")
+            print(f"📍 Search {task_index}/{total_tasks}: '{keyword}' in '{location_name}'")
             print(f"{'='*60}")
             
             task_start = time.time()
@@ -162,8 +268,8 @@ async def main():
             remaining = total_tasks - completed
             eta_seconds = avg_time * remaining
             
-            print(f"\n   ✅ Found {len(posts)} posts for '{keyword}'")
-            print(f"   📊 Progress: {completed}/{total_tasks} keywords done")
+            print(f"\n   ✅ Found {len(posts)} posts for '{keyword}' in '{location_name}'")
+            print(f"   📊 Progress: {completed}/{total_tasks} searches done")
             if remaining > 0:
                 print(f"   ⏳ ETA: {format_time(eta_seconds)} remaining (avg {format_time(avg_time)} per search)")
             else:
@@ -193,15 +299,15 @@ async def main():
     if duplicate_count > 0:
         print(f"\n🔹 Removed {duplicate_count} duplicate post(s)")
     
-    os.makedirs("results", exist_ok=True)
+    # Save results
     df = pd.DataFrame(unique_posts)
-    timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M")
     time_label = time_filter.replace("past-", "")
     output_file = f"results/posts_{time_label}_{timestamp}.xlsx"
     df.to_excel(output_file, index=False)
     
     print(f"\n{'='*60}")
     print(f"✅ Saved {len(df)} posts to {output_file}")
+    print(f"✅ URLs saved to: {url_file}")
     print(f"{'='*60}")
 
 if __name__ == "__main__":

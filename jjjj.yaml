@@ -10,3 +10,16 @@
     - Noida
     - Delhi
     - Gurugram
+
+
+- role: 
+    - Intern
+  locations:
+    - Remote
+
+
+
+- role: 
+    - Data science Apprentice 
+  locations:
+    -  Remote
