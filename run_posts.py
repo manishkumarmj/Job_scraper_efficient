@@ -9,11 +9,7 @@ from scrapers.linkedin_posts_scraper import scrape_linkedin_posts
 
 def select_location():
     print("\n📍 Select location:")
-<<<<<<< HEAD
     print("  1. Delhi NCR (Delhi, Noida, Gurugram, Faridabad)")
-=======
-    print("  1. Delhi NCR (Delhi, Noida, Greater Noida, Gurugram, Faridabad)")
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
     print("  2. Mumbai")
     print("  3. Pune")
     print("  4. Chennai")
@@ -24,7 +20,6 @@ def select_location():
     print("  9. Custom (enter Geo ID manually)")
     
     location_map = {
-<<<<<<< HEAD
         "1": ["102713980", "103644278", "102105104", "106096897"],  # Delhi NCR
         "2": ["102374091"],   # Mumbai
         "3": ["102890884"],   # Pune
@@ -34,28 +29,13 @@ def select_location():
         "7": ["103597537"],   # Chandigarh / Mohali
         "8": [],              # All India (no filter)
         "9": "custom"         # Custom
-=======
-        "1": "102713980,103644278,102105104,106096897",  # Delhi NCR
-        "2": "102374091",   # Mumbai
-        "3": "102890884",   # Pune
-        "4": "103120538",   # Chennai
-        "5": "103490475",   # Hyderabad
-        "6": "102844750",   # Bangalore
-        "7": "103597537",   # Chandigarh / Mohali
-        "8": "",            # All India (no filter)
-        "9": "custom"       # Custom
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
     }
     
     while True:
         choice = input("\nEnter your choice (1-9): ").strip()
         if choice == "9":
             custom = input("Enter Geo ID (comma separated if multiple): ").strip()
-<<<<<<< HEAD
             return [g.strip() for g in custom.split(",")] if custom else []
-=======
-            return custom
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
         if choice in location_map:
             return location_map[choice]
         print("❌ Invalid choice.")
@@ -105,7 +85,6 @@ def format_time(seconds):
     else:
         return f"{s}s"
 
-<<<<<<< HEAD
 def generate_urls(keywords, geo_ids, time_filter, content_type, sort_by):
     """Generate all URLs based on selections."""
     sort_map = {
@@ -173,39 +152,27 @@ def generate_urls(keywords, geo_ids, time_filter, content_type, sort_by):
     
     return url_list
 
-=======
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
 async def main():
     print("\n" + "="*60)
     print("🔍 LINKEDIN POST SCRAPER")
     print("="*60)
     
-<<<<<<< HEAD
     geo_ids = select_location()
-=======
-    geo_id = select_location()
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
     time_filter = select_time_filter()
     content_type = select_content_type()
     sort_by = select_sort_order()
     
-<<<<<<< HEAD
     # Display location names
     location_names = {
         "102713980": "Delhi",
         "103644278": "Noida",
         "102105104": "Gurugram",
         "106096897": "Faridabad",
-=======
-    location_names = {
-        "102713980,103644278,102105104,106096897": "Delhi NCR",
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
         "102374091": "Mumbai",
         "102890884": "Pune",
         "103120538": "Chennai",
         "103490475": "Hyderabad",
         "102844750": "Bangalore",
-<<<<<<< HEAD
         "103597537": "Chandigarh/Mohali"
     }
     
@@ -213,12 +180,6 @@ async def main():
     if geo_ids:
         loc_names = [location_names.get(g, g) for g in geo_ids]
         location_display = ", ".join(loc_names)
-=======
-        "103597537": "Chandigarh/Mohali",
-        "": "All India"
-    }
-    location_display = location_names.get(geo_id, geo_id if geo_id else "All India")
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
     
     print(f"\n✅ Scraping with:")
     print(f"   📍 Location: {location_display}")
@@ -241,7 +202,6 @@ async def main():
         print("❌ No keywords found in inputs_posts.yaml")
         return
     
-<<<<<<< HEAD
     # ----- GENERATE AND SAVE ALL URLS -----
     print("📋 Generating all search URLs...")
     url_list = generate_urls(keywords, geo_ids, time_filter, content_type, sort_by)
@@ -276,27 +236,16 @@ async def main():
             tasks.append((keyword, ""))
     
     total_tasks = len(tasks)
-=======
-    print(f"📝 Keywords: {', '.join(keywords)}\n")
-    
-    total_tasks = len(keywords)
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
     all_posts = []
     completed = 0
     start_time = time.time()
     scraped_times = []
     
     try:
-<<<<<<< HEAD
         for task_index, (keyword, geo_id) in enumerate(tasks, 1):
             location_name = location_names.get(geo_id, geo_id if geo_id else "All India")
             print(f"\n{'='*60}")
             print(f"📍 Search {task_index}/{total_tasks}: '{keyword}' in '{location_name}'")
-=======
-        for task_index, keyword in enumerate(keywords, 1):
-            print(f"\n{'='*60}")
-            print(f"📍 Search {task_index}/{total_tasks}: '{keyword}'")
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
             print(f"{'='*60}")
             
             task_start = time.time()
@@ -319,13 +268,8 @@ async def main():
             remaining = total_tasks - completed
             eta_seconds = avg_time * remaining
             
-<<<<<<< HEAD
             print(f"\n   ✅ Found {len(posts)} posts for '{keyword}' in '{location_name}'")
             print(f"   📊 Progress: {completed}/{total_tasks} searches done")
-=======
-            print(f"\n   ✅ Found {len(posts)} posts for '{keyword}'")
-            print(f"   📊 Progress: {completed}/{total_tasks} keywords done")
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
             if remaining > 0:
                 print(f"   ⏳ ETA: {format_time(eta_seconds)} remaining (avg {format_time(avg_time)} per search)")
             else:
@@ -355,24 +299,15 @@ async def main():
     if duplicate_count > 0:
         print(f"\n🔹 Removed {duplicate_count} duplicate post(s)")
     
-<<<<<<< HEAD
     # Save results
     df = pd.DataFrame(unique_posts)
-=======
-    os.makedirs("results", exist_ok=True)
-    df = pd.DataFrame(unique_posts)
-    timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M")
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
     time_label = time_filter.replace("past-", "")
     output_file = f"results/posts_{time_label}_{timestamp}.xlsx"
     df.to_excel(output_file, index=False)
     
     print(f"\n{'='*60}")
     print(f"✅ Saved {len(df)} posts to {output_file}")
-<<<<<<< HEAD
     print(f"✅ URLs saved to: {url_file}")
-=======
->>>>>>> 1f28a5fee1f74672dff0c012bd734be9074a6ea6
     print(f"{'='*60}")
 
 if __name__ == "__main__":
